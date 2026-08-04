@@ -139,6 +139,9 @@ export default function Sidebar({ resourceCounts = {} }: SidebarProps) {
                   {CATEGORIES.map((cat: CategoryConfig) => {
                     const active = isActivePrefix(`/resources/${cat.slug}`);
                     const count = resourceCounts[cat.slug] || 0;
+
+                    if (count === 0) return null;
+
                     return (
                       <Link
                         key={cat.slug}

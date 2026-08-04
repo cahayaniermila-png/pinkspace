@@ -10,7 +10,8 @@ import {
   Gauge, 
   Database, 
   Keyboard, 
-  Info 
+  Info,
+  Wrench
 } from "lucide-react";
 import { SettingsNavLink } from "./SettingsNavLink";
 
@@ -26,6 +27,7 @@ export function SettingsSidebar() {
     { name: "Data Management", path: "/settings/data", icon: Database },
     { name: "Shortcuts", path: "/settings/shortcuts", icon: Keyboard },
     { name: "About", path: "/settings/about", icon: Info },
+    { name: "Advanced", path: "/settings/advanced", icon: Wrench },
   ];
 
   return (
