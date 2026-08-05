@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "pinkspace-db"
-database_id = "YOUR_CLOUDFLARE_D1_DATABASE_ID" # Will be replaced after creating database on Cloudflare
+database_id = "f7669774-1360-4fef-8350-42cf6f76c5b9"
 
 # Cloudflare R2 Storage Bucket Binding
 [[r2_buckets]]
