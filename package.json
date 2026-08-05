@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && node -e \"const fs=require('fs'),p='./node_modules/@prisma/client/runtime/';['mysql','postgresql'].forEach(d=>{try{fs.unlinkSync(p+'query_engine_bg.'+d+'.wasm')}catch(e){}})\"",
     "dev": "next dev",
     "build": "next build",
     "pages:build": "opennextjs-cloudflare build",
