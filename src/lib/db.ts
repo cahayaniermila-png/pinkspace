@@ -1,40 +1,47 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaD1 } from "@prisma/adapter-d1";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 /**
- * Returns a PrismaClient instance configured for Cloudflare D1 (in Cloudflare Workers)
- * or standard PrismaClient singleton (in local dev / build).
+ * Returns a PrismaClient instance.
+ * In Cloudflare Workers production, uses @prisma/adapter-d1 with Cloudflare D1 database.
+ * In local dev or build environment, uses standard PrismaClient singleton with SQLite fallback.
  */
 export function getPrismaClient(): PrismaClient {
-  try {
-    const cfContext = getCloudflareContext();
-    if (cfContext?.env?.DB) {
-      const adapter = new PrismaD1(cfContext.env.DB as D1Database);
-      return new PrismaClient({ adapter } as any);
-    }
-  } catch (_e) {
-    // Fallback when running outside of Cloudflare Workers request context (local dev / build)
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
   }
 
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL || "file:./dev.db",
-        },
-      },
-    });
+  if (process.env.NODE_ENV === "production") {
+    try {
+      const { getCloudflareContext } = require("@opennextjs/cloudflare");
+      const ctx = getCloudflareContext();
+      if (ctx?.env?.DB) {
+        const adapter = new PrismaD1(ctx.env.DB as D1Database);
+        const client = new PrismaClient({ adapter } as any);
+        return client;
+      }
+    } catch (_e) {
+      // Fallback if getCloudflareContext is not available
+    }
   }
-  return globalForPrisma.prisma;
+
+  const client = new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL || "file:./dev.db",
+      },
+    },
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
+  }
+
+  return client;
 }
 
 export const prisma = getPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
