@@ -4,8 +4,6 @@ import { Plus, Edit2, Trash2, ShieldAlert } from "lucide-react";
 import DeleteButton from "./DeleteButton"; // We'll create this client component next
 import LogoutButton from "./LogoutButton";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminPage() {
   const resources = await prisma.resource.findMany({
     include: {
