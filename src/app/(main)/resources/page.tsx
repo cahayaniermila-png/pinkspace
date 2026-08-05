@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FolderOpen } from "lucide-react";
 import { CATEGORIES } from "@/config/categories";
 
+export const dynamic = "force-dynamic";
+
 export default async function ResourcesPage() {
   const categories = await prisma.category.findMany({
     orderBy: { sortOrder: "asc" },

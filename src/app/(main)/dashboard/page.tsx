@@ -4,6 +4,8 @@ import ResourceCard from "@/components/ResourceCardClientWrapper";
 import { Activity, Clock, Download, ArrowRight, FolderOpen, Star } from "lucide-react";
 import { CATEGORIES } from "@/config/categories";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const recentResources = await prisma.resource.findMany({
     take: 4,

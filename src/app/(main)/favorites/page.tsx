@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import ResourceCard from "@/components/ResourceCardClientWrapper";
 import { HeartCrack, Heart } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function FavoritesPage() {
   const favoriteResources = await prisma.resource.findMany({
     where: { isFavorite: true },
