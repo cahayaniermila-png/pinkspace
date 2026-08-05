@@ -12,7 +12,7 @@ const globalForPrisma = globalThis as unknown as {
 export function getPrismaClient(d1Binding?: D1Database): PrismaClient {
   if (d1Binding) {
     const adapter = new PrismaD1(d1Binding);
-    return new PrismaClient({ adapter });
+    return new PrismaClient({ adapter } as any);
   }
 
   if (!globalForPrisma.prisma) {
