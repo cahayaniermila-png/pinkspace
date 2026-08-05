@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma/client";
 import { PrismaD1 } from "@prisma/adapter-d1";
 
 const globalForPrisma = globalThis as unknown as {
@@ -29,13 +29,19 @@ export function getPrismaClient(): PrismaClient {
     }
   }
 
-  const client = new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL || "file:./dev.db",
-      },
-    },
-  });
+  const dummyD1 = {
+    prepare: () => ({
+      bind: () => ({
+        run: async () => ({ meta: { changes: 0, duration: 0 } }),
+        raw: async () => [[]],
+        all: async () => ({ results: [], success: true, meta: {} }),
+        first: async () => null,
+      }),
+    }),
+    exec: async () => {},
+  };
+  const adapter = new PrismaD1(dummyD1 as any);
+  const client = new PrismaClient({ adapter } as any);
 
   if (process.env.NODE_ENV !== "production") {
     globalForPrisma.prisma = client;
