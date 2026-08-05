@@ -7,26 +7,23 @@ const globalForPrisma = globalThis as unknown as {
 
 /**
  * Returns a PrismaClient instance.
- * In Cloudflare Workers production, uses @prisma/adapter-d1 with Cloudflare D1 database.
- * In local dev or build environment, uses standard PrismaClient singleton with SQLite fallback.
+ * In Cloudflare Workers production, uses @prisma/adapter-d1 with Cloudflare D1 database from request context.
+ * In local dev or build environment, falls back cleanly.
  */
 export function getPrismaClient(): PrismaClient {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
+  try {
+    const { getCloudflareContext } = require("@opennextjs/cloudflare");
+    const ctx = getCloudflareContext();
+    if (ctx?.env?.DB) {
+      const adapter = new PrismaD1(ctx.env.DB as D1Database);
+      return new PrismaClient({ adapter } as any);
+    }
+  } catch (_e) {
+    // Fallback if getCloudflareContext is not available
   }
 
-  if (process.env.NODE_ENV === "production") {
-    try {
-      const { getCloudflareContext } = require("@opennextjs/cloudflare");
-      const ctx = getCloudflareContext();
-      if (ctx?.env?.DB) {
-        const adapter = new PrismaD1(ctx.env.DB as D1Database);
-        const client = new PrismaClient({ adapter } as any);
-        return client;
-      }
-    } catch (_e) {
-      // Fallback if getCloudflareContext is not available
-    }
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
   }
 
   const dummyD1 = {
@@ -50,4 +47,16 @@ export function getPrismaClient(): PrismaClient {
   return client;
 }
 
-export const prisma = getPrismaClient();
+/**
+ * Dynamic Proxy ensuring getPrismaClient() is evaluated per property/query call inside Cloudflare Worker requests.
+ */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrismaClient() as any;
+    const value = client[prop];
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
+  },
+});
