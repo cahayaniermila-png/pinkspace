@@ -1,0 +1,15 @@
+name = "pinkspace"
+pages_build_output_dir = ".vercel/output/static"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Cloudflare D1 Database Binding
+[[d1_databases]]
+binding = "DB"
+database_name = "pinkspace-db"
+database_id = "YOUR_CLOUDFLARE_D1_DATABASE_ID" # Will be replaced after creating database on Cloudflare
+
+# Cloudflare R2 Storage Bucket Binding
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "pinkspace-storage"

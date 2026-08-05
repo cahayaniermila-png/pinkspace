@@ -6,6 +6,25 @@
    ═══════════════════════════════════════════ */
 
 :root {
+  /* ── Default Fallback Tokens (Soft Sakura) to prevent FOUC / Flash on Refresh ── */
+  --color-background: #FFF5FA;
+  --color-foreground: #241522;
+  --color-surface: rgba(255, 255, 255, 0.7);
+  --color-surface-hover: rgba(255, 255, 255, 0.9);
+  --color-primary: #FF8DC4;
+  --color-primary-hover: #F05AA5;
+  --color-border: rgba(255, 183, 217, 0.3);
+  --color-border-strong: rgba(255, 143, 196, 0.4);
+  --color-accent-1: #FFCCE5;
+  --color-accent-2: #FFE4F1;
+  --color-accent-3: #FFB3D9;
+  --glass-opacity: 0.7;
+  --glass-blur: 12px;
+  --glass-shadow: 0 8px 32px rgba(136, 60, 93, 0.05);
+  --glow-color: rgba(255, 141, 196, 0.3);
+  --gradient-hero: linear-gradient(135deg, #FF8DC4, #F05AA5);
+  --gradient-card: linear-gradient(135deg, #FFB3D9, #FFE4F1, #FFB3D9);
+
   /* ── Dynamic Theme Palette Mapping ── */
   --pink-50: var(--color-background);
   --pink-100: var(--color-accent-2);
