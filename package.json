@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "prisma generate && node -e \"const fs=require('fs'); const p1='./node_modules/@prisma/client/runtime/'; const p2='./node_modules/.prisma/client/'; const p3='./src/generated/prisma/'; ['mysql','postgresql'].forEach(d=>{try{fs.unlinkSync(p1+'query_engine_bg.'+d+'.wasm')}catch(e){}try{fs.unlinkSync(p1+'query_compiler_bg.'+d+'.wasm')}catch(e){}}); try{fs.unlinkSync(p1+'query_engine_bg.sqlite.wasm')}catch(e){}; try{fs.unlinkSync(p2+'query_engine_bg.wasm')}catch(e){}; try{fs.unlinkSync(p3+'query_engine_bg.wasm')}catch(e){}; try{fs.unlinkSync(p3+'query_engine-windows.dll.node')}catch(e){}\"",
+    "postinstall": "prisma generate && node -e \"const fs=require('fs'); const p1='./node_modules/@prisma/client/runtime/'; ['mysql','postgresql','cockroachdb','sqlserver'].forEach(d=>{try{fs.unlinkSync(p1+'query_engine_bg.'+d+'.wasm')}catch(e){}try{fs.unlinkSync(p1+'query_compiler_bg.'+d+'.wasm')}catch(e){}});\"",
     "dev": "next dev",
     "build": "next build",
     "pages:build": "opennextjs-cloudflare build",
