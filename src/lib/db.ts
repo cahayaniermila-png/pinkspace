@@ -12,17 +12,14 @@ const globalForPrisma = globalThis as unknown as {
  */
 export function getPrismaClient(): PrismaClient {
   try {
-    const isWorkerRuntime =
-      typeof (globalThis as any).WebSocketPair !== "undefined" ||
-      process.env.NODE_ENV === "production";
-
-    if (isWorkerRuntime) {
-      const { getCloudflareContext } = require("@opennextjs/cloudflare");
-      const ctx = getCloudflareContext();
-      if (ctx?.env?.DB) {
+    const { getCloudflareContext } = require("@opennextjs/cloudflare");
+    const ctx = getCloudflareContext();
+    if (ctx?.env?.DB) {
+      if (!(ctx.env as any).__prismaClient) {
         const adapter = new PrismaD1(ctx.env.DB as D1Database);
-        return new PrismaClient({ adapter } as any);
+        (ctx.env as any).__prismaClient = new PrismaClient({ adapter } as any);
       }
+      return (ctx.env as any).__prismaClient;
     }
   } catch (_e) {
     // getCloudflareContext is not available

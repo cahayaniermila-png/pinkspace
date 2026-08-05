@@ -10,23 +10,19 @@ export default async function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Aggregate resource counts for the sidebar (Server Component)
-  const categoryCounts = await prisma.resource.groupBy({
-    by: ["categoryId"],
-    _count: {
-      id: true,
+  // Fetch categories with resource counts (D1 Driver Adapter Compatible)
+  const categories = await prisma.category.findMany({
+    include: {
+      _count: {
+        select: { resources: true },
+      },
     },
   });
-
-  const categories = await prisma.category.findMany();
   
   // Transform to { slug: count }
   const resourceCounts: Record<string, number> = {};
-  categoryCounts.forEach((count) => {
-    const cat = categories.find((c) => c.id === count.categoryId);
-    if (cat) {
-      resourceCounts[cat.slug] = count._count.id;
-    }
+  categories.forEach((cat) => {
+    resourceCounts[cat.slug] = cat._count.resources;
   });
 
   // Prepare searchable resources
