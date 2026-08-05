@@ -11,15 +11,17 @@ const globalForPrisma = globalThis as unknown as {
  * In local dev (npm run dev), uses standard PrismaClient with SQLite file:./dev.db.
  */
 export function getPrismaClient(): PrismaClient {
-  try {
-    const { getCloudflareContext } = require("@opennextjs/cloudflare");
-    const ctx = getCloudflareContext();
-    if (ctx?.env?.DB) {
-      const adapter = new PrismaD1(ctx.env.DB as D1Database);
-      return new PrismaClient({ adapter } as any);
+  if (process.env.NODE_ENV === "production") {
+    try {
+      const { getCloudflareContext } = require("@opennextjs/cloudflare");
+      const ctx = getCloudflareContext();
+      if (ctx?.env?.DB) {
+        const adapter = new PrismaD1(ctx.env.DB as D1Database);
+        return new PrismaClient({ adapter } as any);
+      }
+    } catch (_e) {
+      // getCloudflareContext is not available
     }
-  } catch (_e) {
-    // getCloudflareContext is not available
   }
 
   if (globalForPrisma.prisma) {
