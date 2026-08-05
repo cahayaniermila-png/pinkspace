@@ -7,7 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 
 /**
  * Returns a PrismaClient instance configured for Cloudflare D1 (if d1Binding is supplied)
- * or standard PrismaClient (for local SQLite dev / fallback).
+ * or standard PrismaClient with fallback URL for build time.
  */
 export function getPrismaClient(d1Binding?: D1Database): PrismaClient {
   if (d1Binding) {
@@ -16,11 +16,25 @@ export function getPrismaClient(d1Binding?: D1Database): PrismaClient {
   }
 
   if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient();
+    globalForPrisma.prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL || "file:./dev.db",
+        },
+      },
+    });
   }
   return globalForPrisma.prisma;
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL || "file:./dev.db",
+      },
+    },
+  });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
