@@ -89,3 +89,21 @@ export async function deleteResource(id: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function toggleFavoriteAction(id: string, isFavorite: boolean) {
+  try {
+    await prisma.resource.update({
+      where: { id },
+      data: { isFavorite },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/favorites");
+    revalidatePath("/resources");
+    
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
