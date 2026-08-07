@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Download, Eye, Heart, ExternalLink, Tag } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { storage } from "@/lib/storage";
-import { toggleFavoriteAction } from "@/app/actions/resource";
 
 interface ResourceCardProps {
   resource: {
@@ -33,58 +32,23 @@ export default function ResourceCard({ resource, onPreview }: ResourceCardProps)
   const [isFavorite, setIsFavorite] = useState(resource.isFavorite);
   const [isHovered, setIsHovered] = useState(false);
 
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  const handleDownload = async (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    
+  const handleDownload = () => {
     if (resource.sourceType === "FILE" && resource.fileUrl) {
-      if (resource.fileUrl.endsWith(".user.js")) {
-        window.open(storage.getDownloadUrl(resource.fileUrl), '_blank');
-        return;
-      }
-      
-      try {
-        setIsDownloading(true);
-        const url = storage.getDownloadUrl(resource.fileUrl);
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = resource.fileUrl.split("/").pop() || "download";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-      } catch (error) {
-        console.error("Download failed:", error);
-        const url = storage.getDownloadUrl(resource.fileUrl!);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = resource.fileUrl!.split("/").pop() || "download";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } finally {
-        setIsDownloading(false);
-      }
+      const url = storage.getDownloadUrl(resource.fileUrl);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = resource.fileUrl.split("/").pop() || "download";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else if (resource.sourceType === "LINK" && resource.externalUrl) {
       window.open(resource.externalUrl, "_blank", "noopener,noreferrer");
     }
   };
 
-  const toggleFavorite = async () => {
-    const newFavoriteState = !isFavorite;
-    setIsFavorite(newFavoriteState);
-    try {
-      await toggleFavoriteAction(resource.id, newFavoriteState);
-    } catch (error) {
-      console.error("Failed to toggle favorite:", error);
-      setIsFavorite(isFavorite); // revert on error
-    }
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    // TODO: Call API to persist favorite status
   };
 
   return (
@@ -190,8 +154,7 @@ export default function ResourceCard({ resource, onPreview }: ResourceCardProps)
           >
             {resource.sourceType === "FILE" ? (
               <>
-                <Download size={14} className={isDownloading ? "animate-bounce" : ""} /> 
-                {resource.fileUrl?.endsWith(".user.js") ? "Install Script" : (isDownloading ? "Downloading..." : "Download")}
+                <Download size={14} /> Download
               </>
             ) : (
               <>

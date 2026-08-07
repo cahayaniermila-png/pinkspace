@@ -87,39 +87,15 @@ export default function PreviewModal({ isOpen, onClose, resource }: PreviewModal
   const isImageFile = resource.fileUrl?.match(/\.(png|jpe?g|svg)$/i);
   const isZipFile = resource.fileUrl?.endsWith(".zip");
 
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  const handleDownload = async (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    
+  const handleDownload = () => {
     if (resource.sourceType === "FILE" && resource.fileUrl) {
-      try {
-        setIsDownloading(true);
-        const url = storage.getDownloadUrl(resource.fileUrl);
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = resource.fileUrl.split("/").pop() || "download";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-      } catch (error) {
-        console.error("Download failed:", error);
-        const url = storage.getDownloadUrl(resource.fileUrl!);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = resource.fileUrl!.split("/").pop() || "download";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } finally {
-        setIsDownloading(false);
-      }
+      const url = storage.getDownloadUrl(resource.fileUrl);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = resource.fileUrl.split("/").pop() || "download";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else if (resource.sourceType === "LINK" && resource.externalUrl) {
       window.open(resource.externalUrl, "_blank", "noopener,noreferrer");
     }
@@ -223,53 +199,23 @@ export default function PreviewModal({ isOpen, onClose, resource }: PreviewModal
 
             {/* Footer / Actions */}
             <div className="p-6 border-t border-pink-100/50 bg-white">
-              {resource.sourceType === "FILE" && resource.fileUrl?.endsWith(".user.js") ? (
-                <div className="flex flex-col gap-3">
-                  <button
-                    onClick={() => window.open(storage.getDownloadUrl(resource.fileUrl!), '_blank')}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white transition-all shadow-md hover:shadow-lg"
-                    style={{ background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)" }}
-                  >
-                    <ExternalLink size={18} /> Install to Tampermonkey
-                  </button>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleDownload}
-                      className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-ink-600 bg-ink-50 hover:bg-ink-100 transition-colors flex items-center justify-center gap-2 border border-ink-100"
-                    >
-                      <Download size={14} className={isDownloading ? "animate-bounce" : ""} /> 
-                      {isDownloading ? "Downloading..." : "Download File"}
-                    </button>
-                    <a
-                      href="https://www.tampermonkey.net/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-pink-600 bg-pink-50 hover:bg-pink-100 transition-colors flex items-center justify-center gap-2 border border-pink-100"
-                    >
-                      Get Tampermonkey
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={handleDownload}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white transition-all shadow-md hover:shadow-lg"
-                  style={{
-                    background: "linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%)",
-                  }}
-                >
-                  {resource.sourceType === "FILE" ? (
-                    <>
-                      <Download size={18} className={isDownloading ? "animate-bounce" : ""} /> 
-                      {isDownloading ? "Downloading..." : "Download Resource"}
-                    </>
-                  ) : (
-                    <>
-                      <ExternalLink size={18} /> Open External Link
-                    </>
-                  )}
-                </button>
-              )}
+              <button
+                onClick={handleDownload}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white transition-all shadow-md hover:shadow-lg"
+                style={{
+                  background: "linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%)",
+                }}
+              >
+                {resource.sourceType === "FILE" ? (
+                  <>
+                    <Download size={18} /> Download Resource
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink size={18} /> Open External Link
+                  </>
+                )}
+              </button>
             </div>
           </motion.div>
         </>

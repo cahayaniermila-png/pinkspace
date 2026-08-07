@@ -16,12 +16,5 @@
       "database_name": "pinkspace-db",
       "database_id": "f7669774-1360-4fef-8350-72eca2d03cca"
     }
-  ],
-  "rules": [
-    {
-      "type": "CompiledWasm",
-      "globs": ["**/*.wasm"],
-      "fallthrough": true
-    }
   ]
 }
