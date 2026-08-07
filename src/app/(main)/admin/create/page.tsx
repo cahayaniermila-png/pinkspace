@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { ArrowLeft, PlusCircle } from "lucide-react";
 import CreateForm from "./CreateForm";
+import UploadHelpModal from "./UploadHelpModal";
 
 export default async function CreateResourcePage() {
   const categories = await prisma.category.findMany({
@@ -19,7 +20,10 @@ export default async function CreateResourcePage() {
           <PlusCircle size={24} className="text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold text-ink-900 mb-1">Add New Resource</h1>
+          <div className="flex items-center">
+            <h1 className="text-2xl font-extrabold text-ink-900 mb-1">Add New Resource</h1>
+            <UploadHelpModal />
+          </div>
           <p className="text-sm text-ink-500">Upload a new file or add an external link to your workspace.</p>
         </div>
       </div>

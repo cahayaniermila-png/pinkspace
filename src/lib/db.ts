@@ -1,5 +1,6 @@
 import { PrismaClient } from "../generated/prisma";
 import { PrismaD1 } from "@prisma/adapter-d1";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -12,7 +13,6 @@ const globalForPrisma = globalThis as unknown as {
  */
 export function getPrismaClient(): PrismaClient {
   try {
-    const { getCloudflareContext } = require("@opennextjs/cloudflare");
     const ctx = getCloudflareContext();
     if (ctx?.env?.DB) {
       if (!(ctx.env as any).__prismaClient) {

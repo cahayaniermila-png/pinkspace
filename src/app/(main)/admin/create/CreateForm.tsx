@@ -15,7 +15,7 @@ interface Category {
 export default function CreateForm({ categories }: { categories: Category[] }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [sourceType, setSourceType] = useState<"FILE" | "LINK">("FILE");
+  const [sourceType] = useState<"FILE" | "LINK">("LINK");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -122,55 +122,22 @@ export default function CreateForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="pt-4 border-t border-pink-100/50">
-        <div className="flex gap-4 mb-4">
-          <label className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 cursor-pointer transition-all ${sourceType === "FILE" ? "border-pink-500 bg-pink-50/50 text-pink-700 font-bold" : "border-pink-100 bg-white text-ink-500 hover:bg-pink-50"}`}>
-            <input 
-              type="radio" 
-              name="sourceType" 
-              value="FILE" 
-              checked={sourceType === "FILE"} 
-              onChange={() => setSourceType("FILE")} 
-              className="hidden" 
-            />
-            <UploadCloud size={18} /> Upload File
-          </label>
-          <label className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 cursor-pointer transition-all ${sourceType === "LINK" ? "border-pink-500 bg-pink-50/50 text-pink-700 font-bold" : "border-pink-100 bg-white text-ink-500 hover:bg-pink-50"}`}>
-            <input 
-              type="radio" 
-              name="sourceType" 
-              value="LINK" 
-              checked={sourceType === "LINK"} 
-              onChange={() => setSourceType("LINK")} 
-              className="hidden" 
-            />
-            <LinkIcon size={18} /> External Link
-          </label>
+        <input type="hidden" name="sourceType" value="LINK" />
+        <div className="space-y-1.5">
+          <label htmlFor="externalUrl" className="text-sm font-semibold text-ink-900">External URL</label>
+          <input
+            id="externalUrl"
+            name="externalUrl"
+            type="url"
+            required
+            placeholder="https://example.com"
+            className="w-full px-4 py-2.5 rounded-xl border border-pink-100 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300 transition-all text-sm"
+          />
+          <p className="text-xs text-ink-500 mt-2">
+            <strong>Catatan:</strong> Upload file dimatikan karena keterbatasan Cloudflare Workers. 
+            Silakan upload file Anda ke layanan eksternal (misal: Google Drive, GitHub) lalu paste link-nya di sini.
+          </p>
         </div>
-
-        {sourceType === "FILE" ? (
-          <div className="space-y-1.5">
-            <label htmlFor="file" className="text-sm font-semibold text-ink-900">Select File</label>
-            <input
-              id="file"
-              name="file"
-              type="file"
-              required
-              className="w-full px-4 py-2.5 rounded-xl border border-pink-100 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300 transition-all text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200"
-            />
-          </div>
-        ) : (
-          <div className="space-y-1.5">
-            <label htmlFor="externalUrl" className="text-sm font-semibold text-ink-900">URL</label>
-            <input
-              id="externalUrl"
-              name="externalUrl"
-              type="url"
-              required
-              placeholder="https://example.com"
-              className="w-full px-4 py-2.5 rounded-xl border border-pink-100 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-300 transition-all text-sm"
-            />
-          </div>
-        )}
       </div>
 
       <div className="pt-6 flex justify-end gap-3">

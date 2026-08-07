@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, Eye, Heart, ExternalLink, Tag } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { storage } from "@/lib/storage";
+import { toggleFavoriteAction } from "@/app/actions/favorite";
 
 interface ResourceCardProps {
   resource: {
@@ -46,9 +47,15 @@ export default function ResourceCard({ resource, onPreview }: ResourceCardProps)
     }
   };
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    // TODO: Call API to persist favorite status
+  const toggleFavorite = async () => {
+    const newFavoriteState = !isFavorite;
+    setIsFavorite(newFavoriteState);
+    try {
+      await toggleFavoriteAction(resource.id, newFavoriteState);
+    } catch (error) {
+      // Revert on failure
+      setIsFavorite(isFavorite);
+    }
   };
 
   return (
